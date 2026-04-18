@@ -1,0 +1,1743 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guia Completo do Kiro · Spec-Driven AI Development</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;0,9..144,800;1,9..144,400&family=JetBrains+Mono:wght@400;500;700&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg: #0f0f0d;
+  --bg-elev: #161613;
+  --bg-card: #1c1c18;
+  --ink: #f4f1e8;
+  --ink-dim: #a8a59a;
+  --ink-muted: #6c6a62;
+  --accent: #d4ff3a;
+  --accent-dim: #8ba81a;
+  --warn: #ff6b3a;
+  --border: #2a2a24;
+  --border-hi: #3a3a32;
+  --code-bg: #0a0a09;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:20px}
+body{
+  font-family:'Instrument Sans', sans-serif;
+  background:var(--bg);
+  color:var(--ink);
+  line-height:1.65;
+  font-size:16px;
+  -webkit-font-smoothing:antialiased;
+}
+::selection{background:var(--accent);color:#000}
+
+/* Grain overlay */
+body::before{
+  content:'';
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:1000;
+  opacity:.04;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Layout */
+.wrap{display:grid;grid-template-columns:280px 1fr;max-width:1440px;margin:0 auto;gap:0}
+aside.nav{
+  position:sticky;top:0;height:100vh;overflow-y:auto;
+  border-right:1px solid var(--border);
+  padding:32px 24px;
+  background:var(--bg-elev);
+}
+main{padding:48px 64px;max-width:920px}
+
+/* Nav */
+.brand{
+  font-family:'Fraunces',serif;
+  font-weight:800;
+  font-size:28px;
+  letter-spacing:-0.02em;
+  margin-bottom:4px;
+  color:var(--ink);
+}
+.brand span{color:var(--accent)}
+.subbrand{
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:.2em;
+  color:var(--ink-muted);
+  margin-bottom:32px;
+}
+.nav-section{
+  font-size:10px;
+  text-transform:uppercase;
+  letter-spacing:.2em;
+  color:var(--ink-muted);
+  margin:24px 0 8px;
+  font-weight:600;
+}
+.nav a{
+  display:block;
+  padding:7px 10px;
+  color:var(--ink-dim);
+  text-decoration:none;
+  font-size:14px;
+  border-radius:4px;
+  border-left:2px solid transparent;
+  transition:all .15s;
+}
+.nav a:hover{color:var(--ink);background:var(--bg-card)}
+.nav a.active{color:var(--accent);border-left-color:var(--accent)}
+
+/* Hero */
+.hero{
+  padding:40px 0 72px;
+  border-bottom:1px solid var(--border);
+  margin-bottom:64px;
+}
+.eyebrow{
+  display:inline-block;
+  padding:6px 14px;
+  background:var(--accent);
+  color:#000;
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:.15em;
+  text-transform:uppercase;
+  border-radius:2px;
+  margin-bottom:24px;
+}
+h1{
+  font-family:'Fraunces',serif;
+  font-weight:800;
+  font-size:clamp(48px, 7vw, 84px);
+  line-height:.95;
+  letter-spacing:-0.03em;
+  margin-bottom:24px;
+}
+h1 em{
+  font-style:italic;
+  font-weight:400;
+  color:var(--accent);
+}
+.lead{
+  font-size:20px;
+  color:var(--ink-dim);
+  max-width:680px;
+  line-height:1.5;
+}
+
+/* Section */
+section{padding:56px 0;border-bottom:1px solid var(--border)}
+section:last-of-type{border-bottom:none}
+h2{
+  font-family:'Fraunces',serif;
+  font-weight:800;
+  font-size:42px;
+  line-height:1;
+  letter-spacing:-0.02em;
+  margin-bottom:8px;
+  display:flex;
+  align-items:baseline;
+  gap:16px;
+}
+h2 .num{
+  font-family:'JetBrains Mono',monospace;
+  font-size:14px;
+  color:var(--accent);
+  font-weight:500;
+  letter-spacing:0;
+}
+h3{
+  font-family:'Fraunces',serif;
+  font-weight:600;
+  font-size:26px;
+  margin:40px 0 12px;
+  letter-spacing:-0.01em;
+}
+h4{
+  font-size:17px;
+  margin:24px 0 10px;
+  font-weight:600;
+}
+p{margin-bottom:16px;color:var(--ink-dim)}
+p strong{color:var(--ink);font-weight:600}
+
+/* Tagline */
+.tagline{
+  font-family:'Fraunces',serif;
+  font-style:italic;
+  font-size:22px;
+  color:var(--ink);
+  margin:16px 0 32px;
+  padding-left:20px;
+  border-left:3px solid var(--accent);
+}
+
+/* Cards */
+.card-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(240px, 1fr));
+  gap:16px;
+  margin:24px 0;
+}
+.card{
+  background:var(--bg-card);
+  border:1px solid var(--border);
+  padding:24px;
+  border-radius:4px;
+  transition:all .2s;
+}
+.card:hover{border-color:var(--border-hi);transform:translateY(-2px)}
+.card .icon{
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;
+  color:var(--accent);
+  margin-bottom:12px;
+  letter-spacing:.1em;
+}
+.card h4{margin:0 0 8px;font-size:16px}
+.card p{font-size:14px;margin:0;color:var(--ink-dim)}
+
+/* Code */
+code{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.88em;
+  background:var(--code-bg);
+  padding:2px 6px;
+  border-radius:3px;
+  color:var(--accent);
+  border:1px solid var(--border);
+}
+pre{
+  background:var(--code-bg);
+  border:1px solid var(--border);
+  padding:20px 24px;
+  border-radius:6px;
+  overflow-x:auto;
+  margin:16px 0 24px;
+  font-size:13.5px;
+  line-height:1.65;
+  position:relative;
+}
+pre code{
+  background:none;
+  border:none;
+  padding:0;
+  color:var(--ink);
+  font-size:inherit;
+}
+pre::before{
+  content:attr(data-lang);
+  position:absolute;
+  top:8px;right:12px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px;
+  color:var(--ink-muted);
+  letter-spacing:.1em;
+  text-transform:uppercase;
+}
+
+/* Lists */
+ul, ol{margin:12px 0 20px 20px;color:var(--ink-dim)}
+li{margin-bottom:8px}
+li strong{color:var(--ink)}
+
+/* Tables */
+.table-wrap{overflow-x:auto;margin:24px 0}
+table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:14px;
+  border:1px solid var(--border);
+}
+th, td{
+  padding:14px 18px;
+  text-align:left;
+  border-bottom:1px solid var(--border);
+}
+th{
+  background:var(--bg-card);
+  font-weight:600;
+  font-size:12px;
+  text-transform:uppercase;
+  letter-spacing:.1em;
+  color:var(--ink);
+}
+td{color:var(--ink-dim)}
+tr:last-child td{border-bottom:none}
+td strong{color:var(--ink)}
+
+/* Callouts */
+.callout{
+  border-left:3px solid var(--accent);
+  background:var(--bg-card);
+  padding:20px 24px;
+  margin:24px 0;
+  border-radius:0 4px 4px 0;
+}
+.callout.warn{border-left-color:var(--warn)}
+.callout.warn .label{color:var(--warn)}
+.callout .label{
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;
+  color:var(--accent);
+  font-weight:600;
+  letter-spacing:.15em;
+  text-transform:uppercase;
+  display:block;
+  margin-bottom:8px;
+}
+.callout p:last-child{margin-bottom:0}
+.callout strong{color:var(--ink)}
+
+/* Pros/Cons */
+.pros-cons{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:16px;
+  margin:24px 0;
+}
+.pros-cons > div{
+  padding:20px 24px;
+  border-radius:4px;
+  background:var(--bg-card);
+  border:1px solid var(--border);
+}
+.pros-cons h5{
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;
+  letter-spacing:.15em;
+  text-transform:uppercase;
+  margin-bottom:12px;
+}
+.pros h5{color:var(--accent)}
+.cons h5{color:var(--warn)}
+.pros-cons ul{margin:0 0 0 18px;font-size:14px}
+
+/* Tabs */
+.tabs{
+  margin:24px 0;
+  border:1px solid var(--border);
+  border-radius:6px;
+  overflow:hidden;
+}
+.tab-buttons{
+  display:flex;
+  background:var(--bg-card);
+  border-bottom:1px solid var(--border);
+  overflow-x:auto;
+}
+.tab-btn{
+  padding:14px 22px;
+  background:transparent;
+  border:none;
+  color:var(--ink-dim);
+  font-family:inherit;
+  font-size:13px;
+  font-weight:600;
+  cursor:pointer;
+  border-bottom:2px solid transparent;
+  white-space:nowrap;
+  transition:all .15s;
+  letter-spacing:.02em;
+}
+.tab-btn:hover{color:var(--ink)}
+.tab-btn.active{
+  color:var(--accent);
+  border-bottom-color:var(--accent);
+  background:var(--bg);
+}
+.tab-panel{display:none;padding:28px 32px;background:var(--bg)}
+.tab-panel.active{display:block}
+.tab-panel p:last-child{margin-bottom:0}
+
+/* Accordion */
+.accordion{
+  border:1px solid var(--border);
+  border-radius:6px;
+  margin:24px 0;
+  overflow:hidden;
+}
+.acc-item{border-bottom:1px solid var(--border)}
+.acc-item:last-child{border-bottom:none}
+.acc-head{
+  width:100%;
+  padding:18px 24px;
+  background:var(--bg-card);
+  border:none;
+  color:var(--ink);
+  font-family:inherit;
+  font-size:15px;
+  font-weight:600;
+  text-align:left;
+  cursor:pointer;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  transition:background .15s;
+}
+.acc-head:hover{background:var(--bg-elev)}
+.acc-head .chev{
+  font-family:'JetBrains Mono',monospace;
+  color:var(--accent);
+  transition:transform .2s;
+  font-size:18px;
+  font-weight:400;
+}
+.acc-item.open .chev{transform:rotate(45deg)}
+.acc-body{
+  max-height:0;
+  overflow:hidden;
+  transition:max-height .3s ease;
+}
+.acc-item.open .acc-body{max-height:2000px}
+.acc-body-inner{padding:4px 24px 24px}
+.acc-body p:last-child{margin-bottom:0}
+
+/* Flow diagram */
+.flow{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin:32px 0;
+  flex-wrap:wrap;
+}
+.flow-step{
+  flex:1;
+  min-width:160px;
+  background:var(--bg-card);
+  border:1px solid var(--border);
+  padding:18px;
+  border-radius:4px;
+  text-align:center;
+}
+.flow-step .n{
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;
+  color:var(--accent);
+  letter-spacing:.1em;
+}
+.flow-step h5{margin:4px 0;font-size:15px}
+.flow-step p{font-size:12.5px;margin:0;line-height:1.4}
+.flow-arrow{
+  color:var(--accent);
+  font-family:'JetBrains Mono',monospace;
+  font-weight:700;
+  font-size:20px;
+}
+
+/* Price cards */
+.price-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:12px;
+  margin:24px 0;
+}
+.price-card{
+  background:var(--bg-card);
+  border:1px solid var(--border);
+  padding:24px;
+  border-radius:6px;
+  position:relative;
+}
+.price-card.featured{border-color:var(--accent)}
+.price-card.featured::before{
+  content:'RECOMENDADO';
+  position:absolute;
+  top:-10px;left:16px;
+  background:var(--accent);
+  color:#000;
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:.15em;
+  padding:4px 10px;
+  border-radius:2px;
+}
+.price-card .tier{
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;
+  color:var(--ink-muted);
+  letter-spacing:.1em;
+  text-transform:uppercase;
+}
+.price-card .price{
+  font-family:'Fraunces',serif;
+  font-size:38px;
+  font-weight:800;
+  line-height:1;
+  margin:8px 0;
+}
+.price-card .price span{
+  font-size:14px;
+  font-weight:400;
+  color:var(--ink-muted);
+}
+.price-card .credits{
+  font-size:14px;
+  color:var(--accent);
+  font-weight:600;
+  margin-bottom:8px;
+}
+.price-card .desc{font-size:13px;color:var(--ink-dim);margin:0}
+
+/* Comparison chart */
+.compare-table th:first-child{width:180px}
+.compare-table td:first-child{font-weight:600;color:var(--ink)}
+.yes{color:var(--accent);font-weight:700}
+.no{color:var(--ink-muted)}
+.partial{color:var(--warn);font-weight:600}
+
+/* Glossary */
+.glossary dt{
+  font-family:'JetBrains Mono',monospace;
+  color:var(--accent);
+  font-size:14px;
+  margin-top:16px;
+  font-weight:500;
+}
+.glossary dd{
+  margin:4px 0 0 0;
+  color:var(--ink-dim);
+  font-size:14.5px;
+}
+
+/* Footer */
+footer{
+  padding:48px 0 64px;
+  border-top:1px solid var(--border);
+  margin-top:64px;
+  text-align:center;
+}
+footer p{font-size:13px;color:var(--ink-muted);margin:4px 0}
+
+/* Mobile */
+@media (max-width: 900px){
+  .wrap{grid-template-columns:1fr}
+  aside.nav{
+    position:relative;height:auto;
+    border-right:none;border-bottom:1px solid var(--border);
+  }
+  main{padding:32px 24px}
+  h1{font-size:48px}
+  h2{font-size:32px}
+  .pros-cons{grid-template-columns:1fr}
+  .flow{flex-direction:column}
+  .flow-arrow{transform:rotate(90deg)}
+}
+
+/* Syntax tokens */
+.k{color:#ff79c6}
+.s{color:#f1fa8c}
+.c{color:#6272a4;font-style:italic}
+.n{color:var(--accent)}
+.v{color:#8be9fd}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <aside class="nav">
+    <div class="brand">Kiro<span>.</span></div>
+    <div class="subbrand">Guia de Estudos — v1.0</div>
+
+    <div class="nav-section">Fundamentos</div>
+    <a href="#intro">00 — O que é o Kiro</a>
+    <a href="#instalacao">01 — Instalação & Setup</a>
+    <a href="#interface">02 — A Interface</a>
+    <a href="#modos">03 — Vibe vs Spec</a>
+
+    <div class="nav-section">Pilares</div>
+    <a href="#specs">04 — Specs</a>
+    <a href="#hooks">05 — Agent Hooks</a>
+    <a href="#steering">06 — Steering</a>
+    <a href="#mcp">07 — MCP Servers</a>
+    <a href="#modelos">08 — Modelos de IA</a>
+
+    <div class="nav-section">Prática</div>
+    <a href="#exemplos">09 — Exemplos</a>
+    <a href="#boas-praticas">10 — Boas Práticas</a>
+    <a href="#armadilhas">11 — O que Evitar</a>
+
+    <div class="nav-section">Negócio</div>
+    <a href="#planos">12 — Planos & Preços</a>
+    <a href="#comparativo">13 — vs Cursor & Copilot</a>
+    <a href="#limites">14 — Limites</a>
+
+    <div class="nav-section">Extras</div>
+    <a href="#glossario">15 — Glossário</a>
+    <a href="#trilha">16 — Trilha de Aprendizado</a>
+    <a href="#recursos">17 — Recursos</a>
+  </aside>
+
+  <main>
+    <div class="hero">
+      <span class="eyebrow">Guia Completo · 2026</span>
+      <h1>Kiro. O IDE <em>agêntico</em> que pensa antes de codar.</h1>
+      <p class="lead">Um material completo para dominar o Kiro — do "vibe coding" ao spec-driven development em produção. Baseado na documentação oficial, com exemplos práticos, boas práticas e comparações com outras ferramentas do mercado.</p>
+    </div>
+
+    <!-- 00 Intro -->
+    <section id="intro">
+      <h2><span class="num">00</span>O que é o Kiro</h2>
+      <p class="tagline">Kiro é um IDE agêntico que traz estrutura ao desenvolvimento assistido por IA através de <em>spec-driven development</em>.</p>
+
+      <p>Kiro é um ambiente de desenvolvimento integrado (IDE) desenvolvido pela AWS, construído sobre a plataforma open-source <strong>Code OSS</strong> (a mesma base do VS Code). Lançado em preview público em julho de 2025, ele se posiciona como uma resposta estruturada às ferramentas de "vibe coding" como Cursor e GitHub Copilot.</p>
+
+      <p>A grande diferença do Kiro é que ele <strong>não é apenas um assistente de código</strong>. Ele funciona como um parceiro de desenvolvimento que transforma ideias em linguagem natural em especificações formais, documentos de design técnico e planos de implementação — antes mesmo de escrever a primeira linha de código.</p>
+
+      <h3>Por que isso importa?</h3>
+      <p>A maioria das ferramentas de IA para código gera soluções direto do prompt. Isso funciona para tarefas simples, mas gera problemas em códigos complexos: falta de contexto, decisões arquiteturais implícitas, dificuldade de rastrear o "porquê" das implementações. Kiro inverte essa lógica — <strong>a spec vira a fonte da verdade, e o código é um artefato gerado</strong>.</p>
+
+      <div class="card-grid">
+        <div class="card">
+          <div class="icon">// PILAR 01</div>
+          <h4>Specs</h4>
+          <p>Transforma prompts em requisitos, design e tarefas rastreáveis.</p>
+        </div>
+        <div class="card">
+          <div class="icon">// PILAR 02</div>
+          <h4>Agent Hooks</h4>
+          <p>Automações disparadas por eventos (salvar arquivo, criar, deletar, etc.).</p>
+        </div>
+        <div class="card">
+          <div class="icon">// PILAR 03</div>
+          <h4>Steering</h4>
+          <p>Conhecimento persistente sobre seu projeto, convenções e padrões.</p>
+        </div>
+        <div class="card">
+          <div class="icon">// PILAR 04</div>
+          <h4>MCP</h4>
+          <p>Conecta a docs, APIs e bancos de dados via Model Context Protocol.</p>
+        </div>
+      </div>
+
+      <div class="callout">
+        <span class="label">Importante</span>
+        <p>Apesar de ter sido lançado pela AWS, <strong>Kiro não é um serviço AWS e não exige conta AWS</strong>. Você pode fazer login com Google, GitHub, Builder ID ou AWS IAM Identity Center. Ele funciona de forma agnóstica com qualquer stack e qualquer provedor de nuvem.</p>
+      </div>
+    </section>
+
+    <!-- 01 Instalação -->
+    <section id="instalacao">
+      <h2><span class="num">01</span>Instalação & Setup</h2>
+
+      <h3>Requisitos</h3>
+      <p>Kiro está disponível para <strong>macOS, Linux e Windows</strong>. Como é baseado em Code OSS, se sua máquina roda VS Code, roda Kiro.</p>
+
+      <h3>Passo a passo</h3>
+      <ol>
+        <li><strong>Download:</strong> acesse <code>kiro.dev/downloads</code> e baixe o instalador do seu sistema operacional.</li>
+        <li><strong>Instalação:</strong> execute o instalador como qualquer outro aplicativo desktop.</li>
+        <li><strong>Login:</strong> no primeiro acesso, escolha entre Google, GitHub, Builder ID ou AWS IAM Identity Center.</li>
+        <li><strong>Importar configurações:</strong> opcionalmente, importe seus temas, extensões e preferências do VS Code.</li>
+        <li><strong>Onboarding:</strong> o Kiro oferece um tour guiado pelas funcionalidades principais.</li>
+      </ol>
+
+      <h3>CLI (Linha de Comando)</h3>
+      <p>Além do IDE, existe o Kiro CLI para uso no terminal — útil em SSH, CI/CD e workflows headless:</p>
+      <pre data-lang="bash"><code><span class="n">curl</span> -fsSL https://cli.kiro.dev/install | bash</code></pre>
+
+      <div class="callout">
+        <span class="label">Trial generoso</span>
+        <p>Ao criar sua conta pela primeira vez via login social ou Builder ID, você ganha <strong>500 créditos bônus utilizáveis em 30 dias</strong> — em qualquer plano, inclusive o gratuito.</p>
+      </div>
+    </section>
+
+    <!-- 02 Interface -->
+    <section id="interface">
+      <h2><span class="num">02</span>A Interface</h2>
+      <p>Se você vem do VS Code, 90% da interface será familiar: editor central, explorer à esquerda, terminal integrado, source control. O que muda é o <strong>painel Kiro</strong> — onde vivem as funcionalidades agênticas.</p>
+
+      <h3>Painel Kiro — 4 abas principais</h3>
+      <div class="card-grid">
+        <div class="card">
+          <div class="icon">SPECS</div>
+          <h4>Specs</h4>
+          <p>Lista de especificações criadas. Cada spec tem requirements.md, design.md e tasks.md.</p>
+        </div>
+        <div class="card">
+          <div class="icon">HOOKS</div>
+          <h4>Agent Hooks</h4>
+          <p>Automações de eventos. Interface visual para criar triggers em arquivos, prompts e tarefas.</p>
+        </div>
+        <div class="card">
+          <div class="icon">STEERING</div>
+          <h4>Steering</h4>
+          <p>Arquivos markdown que ensinam o Kiro sobre seu projeto, stack e convenções.</p>
+        </div>
+        <div class="card">
+          <div class="icon">MCP</div>
+          <h4>MCP Servers</h4>
+          <p>Servidores externos que estendem as capacidades do agente (docs, APIs, dados).</p>
+        </div>
+      </div>
+
+      <h3>Chat Agêntico</h3>
+      <p>O chat do Kiro tem dois modos de operação que você precisa conhecer desde o início:</p>
+    </section>
+
+    <!-- 03 Modos -->
+    <section id="modos">
+      <h2><span class="num">03</span>Vibe vs Spec</h2>
+
+      <div class="tabs">
+        <div class="tab-buttons">
+          <button class="tab-btn active" data-tab="vibe">Vibe Coding</button>
+          <button class="tab-btn" data-tab="spec">Spec Coding</button>
+        </div>
+        <div class="tab-panel active" data-panel="vibe">
+          <h4>Vibe Coding — Exploração livre</h4>
+          <p>Modo padrão, conversacional. Você descreve o que quer, o Kiro executa diretamente. Ótimo para tarefas rápidas, prototipagem e exploração de ideias sem pressão.</p>
+          <p><strong>Use quando:</strong> a tarefa é simples, você está explorando uma ideia, prototipando ou não tem requisitos rígidos.</p>
+          <pre data-lang="prompt"><code>"Crie um endpoint Express que retorna uma lista de produtos mockados"</code></pre>
+          <p>Resultado: código direto no editor, pronto para testar.</p>
+        </div>
+        <div class="tab-panel" data-panel="spec">
+          <h4>Spec Coding — Estruturado</h4>
+          <p>Modo estruturado. Kiro gera primeiro os requisitos em notação EARS, depois o design técnico com diagramas, e então uma lista de tarefas rastreáveis. Só depois disso o código é escrito.</p>
+          <p><strong>Use quando:</strong> a feature é complexa, envolve equipe, precisa de documentação, tem regressões custosas ou requer alinhamento entre produto e engenharia.</p>
+          <pre data-lang="prompt"><code>"Implemente um sistema de autenticação multi-tenant com JWT,
+refresh tokens e rate limiting por usuário"</code></pre>
+          <p>Resultado: 3 arquivos gerados (requirements.md, design.md, tasks.md) e execução passo-a-passo.</p>
+        </div>
+      </div>
+
+      <div class="pros-cons">
+        <div class="pros">
+          <h5>✓ Vibe é melhor para</h5>
+          <ul>
+            <li>Scripts pequenos e utilitários</li>
+            <li>Prototipação e POCs</li>
+            <li>Exploração de bibliotecas novas</li>
+            <li>Correções pontuais</li>
+            <li>Quando você ainda não sabe o que quer</li>
+          </ul>
+        </div>
+        <div class="cons">
+          <h5>✓ Spec é melhor para</h5>
+          <ul>
+            <li>Features complexas em produção</li>
+            <li>Bug fixes com risco de regressão</li>
+            <li>Trabalho em equipe com múltiplos devs</li>
+            <li>Projetos que precisam auditoria</li>
+            <li>Quando o custo de retrabalho é alto</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 04 Specs -->
+    <section id="specs">
+      <h2><span class="num">04</span>Specs</h2>
+      <p class="tagline">Specs são o coração do Kiro. É onde a mágica do spec-driven development acontece.</p>
+
+      <h3>A estrutura de uma Spec</h3>
+      <p>Toda spec gera três arquivos que ficam versionados junto com seu código:</p>
+
+      <div class="flow">
+        <div class="flow-step">
+          <div class="n">01</div>
+          <h5>requirements.md</h5>
+          <p>User stories e critérios de aceitação em notação EARS</p>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="n">02</div>
+          <h5>design.md</h5>
+          <p>Arquitetura, diagramas de sequência e decisões técnicas</p>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="n">03</div>
+          <h5>tasks.md</h5>
+          <p>Lista de tarefas discretas e rastreáveis para implementar</p>
+        </div>
+      </div>
+
+      <h3>Notação EARS — Easy Approach to Requirements Syntax</h3>
+      <p>O arquivo <code>requirements.md</code> usa EARS, um padrão que força clareza e testabilidade:</p>
+
+      <pre data-lang="ears"><code><span class="k">WHEN</span> [condição ou evento]
+<span class="k">THE SYSTEM SHALL</span> [comportamento esperado]</code></pre>
+
+      <p>Exemplos reais:</p>
+      <pre data-lang="ears"><code><span class="k">WHEN</span> um usuário envia um formulário com dados inválidos
+<span class="k">THE SYSTEM SHALL</span> exibir erros de validação ao lado dos campos
+
+<span class="k">WHEN</span> o token JWT expirou
+<span class="k">THE SYSTEM SHALL</span> retornar 401 e limpar o refresh token do cliente
+
+<span class="k">WHEN</span> o usuário tenta fazer upload de arquivo maior que 10MB
+<span class="k">THE SYSTEM SHALL</span> rejeitar com erro 413 e mensagem "Arquivo muito grande"</code></pre>
+
+      <div class="callout">
+        <span class="label">Por que EARS funciona</span>
+        <p><strong>Clareza:</strong> requisitos são inequívocos.<br>
+        <strong>Testabilidade:</strong> cada requirement vira um caso de teste direto.<br>
+        <strong>Rastreabilidade:</strong> você pode linkar cada linha de código a um requisito.<br>
+        <strong>Completude:</strong> o formato força pensar em todas as condições.</p>
+      </div>
+
+      <h3>Os dois tipos de Spec</h3>
+      <div class="accordion">
+        <div class="acc-item">
+          <button class="acc-head">Feature Specs — para novas funcionalidades <span class="chev">+</span></button>
+          <div class="acc-body"><div class="acc-body-inner">
+            <p>Usadas para construir features novas. Kiro oferece dois workflows para Feature Specs:</p>
+            <p><strong>Requirements-First:</strong> você começa descrevendo o comportamento desejado. Kiro gera requirements → design → tasks. Ideal para projetos greenfield ou product-led.</p>
+            <p><strong>Design-First:</strong> você começa com arquitetura ou pseudocódigo. Kiro deriva os requisitos e tasks. Ideal quando há restrições técnicas rígidas (latência, compliance) ou quando você está portando designs de outras ferramentas.</p>
+          </div></div>
+        </div>
+        <div class="acc-item">
+          <button class="acc-head">Bugfix Specs — para correções cirúrgicas <span class="chev">+</span></button>
+          <div class="acc-body"><div class="acc-body-inner">
+            <p>Para diagnosticar e corrigir bugs com precisão, prevenindo regressões. Em vez de <code>requirements.md</code>, gera-se <code>bugfix.md</code> que documenta:</p>
+            <ul>
+              <li>Comportamento atual (o bug)</li>
+              <li>Comportamento esperado</li>
+              <li>Comportamento que NÃO deve mudar (evita regressão)</li>
+            </ul>
+            <p>Perfeito para bugs em sistemas críticos onde quebrar algo existente é caro.</p>
+          </div></div>
+        </div>
+      </div>
+
+      <h3>Ciclo de execução</h3>
+      <p>Com os três arquivos prontos, a aba de tarefas mostra cada item com status em tempo real. Você pode:</p>
+      <ul>
+        <li><strong>Executar tarefa por tarefa</strong> (clicando em "Start" em cada uma) — recomendado para revisar o que está sendo feito</li>
+        <li><strong>Executar tudo de uma vez</strong> — mais rápido, mas com menos controle</li>
+        <li><strong>Iterar na spec</strong> — editar requirements/design manualmente e pedir para o Kiro regerar as tasks</li>
+      </ul>
+
+      <h3>Boas práticas com Specs</h3>
+      <ul>
+        <li><strong>Commite as specs no Git</strong> junto com o código. Elas são documentação viva.</li>
+        <li><strong>Revise requirements antes de ir para design</strong> — é mais barato corrigir cedo.</li>
+        <li><strong>Mantenha specs pequenas e focadas.</strong> Uma spec = uma feature. Se ficar gigante, quebre em várias.</li>
+        <li><strong>Use Bugfix Specs para qualquer bug em produção</strong> — a documentação do "o que NÃO mudar" é ouro.</li>
+        <li><strong>Não pule o design.md</strong> — mesmo em features pequenas, 5 minutos pensando em arquitetura economizam horas.</li>
+      </ul>
+    </section>
+
+    <!-- 05 Hooks -->
+    <section id="hooks">
+      <h2><span class="num">05</span>Agent Hooks</h2>
+      <p class="tagline">Automações inteligentes que disparam baseadas em eventos. É como ter um colega júnior que nunca esquece de rodar os testes.</p>
+
+      <h3>Como funcionam</h3>
+      <p>Um Agent Hook é a combinação de dois elementos: um <strong>evento gatilho</strong> (trigger) e uma <strong>ação</strong> a ser executada. Quando o evento acontece, o Kiro executa automaticamente a ação em background — seja um prompt para o agente ou um comando shell.</p>
+
+      <h3>Os 10 tipos de trigger disponíveis</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Trigger</th><th>Quando dispara</th><th>Uso típico</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>File Save</strong></td><td>Arquivo salvo que bate com um padrão</td><td>Lint, format, rodar testes, gerar docs</td></tr>
+            <tr><td><strong>File Create</strong></td><td>Arquivo novo criado</td><td>Boilerplate, licença, criar teste associado</td></tr>
+            <tr><td><strong>File Delete</strong></td><td>Arquivo deletado</td><td>Limpar imports órfãos, remover testes</td></tr>
+            <tr><td><strong>Prompt Submit</strong></td><td>Usuário envia um prompt</td><td>Adicionar contexto, bloquear prompts, log</td></tr>
+            <tr><td><strong>Agent Stop</strong></td><td>Agente termina de responder</td><td>Compilar código, rodar testes, revisar</td></tr>
+            <tr><td><strong>Pre Tool Use</strong></td><td>Antes do agente usar uma ferramenta</td><td>Bloquear uso de certas tools, adicionar contexto</td></tr>
+            <tr><td><strong>Post Tool Use</strong></td><td>Depois do agente usar uma ferramenta</td><td>Auditoria, formatação pós-edição</td></tr>
+            <tr><td><strong>Pre Task Execution</strong></td><td>Antes de iniciar tarefa de spec</td><td>Setup de ambiente, validar pré-requisitos</td></tr>
+            <tr><td><strong>Post Task Execution</strong></td><td>Após completar tarefa de spec</td><td>Rodar testes, atualizar docs, notificar</td></tr>
+            <tr><td><strong>Manual Trigger</strong></td><td>Execução manual sob demanda</td><td>Code review, security scan, otimização</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Duas ações possíveis</h3>
+      <div class="card-grid">
+        <div class="card">
+          <div class="icon">// AÇÃO 01</div>
+          <h4>Ask Kiro</h4>
+          <p>Envia um prompt para o agente executar. Use para tarefas que exigem IA (gerar código, revisar, documentar).</p>
+        </div>
+        <div class="card">
+          <div class="icon">// AÇÃO 02</div>
+          <h4>Run Command</h4>
+          <p>Executa um comando shell. Use para tarefas determinísticas (rodar lint, testes, scripts).</p>
+        </div>
+      </div>
+
+      <h3>Duas formas de criar um hook</h3>
+      <p><strong>1. Descrever em linguagem natural</strong> — clique no "+" em Agent Hooks, escolha "Ask Kiro to create a hook" e descreva o que quer. Ex: <em>"Toda vez que um arquivo .test.ts for salvo, rode o jest para esse arquivo e me avise dos erros"</em>.</p>
+      <p><strong>2. Manualmente</strong> — preencha um formulário com título, descrição, evento, padrão de arquivo e a ação.</p>
+
+      <h3>Exemplo real: auto-documentação</h3>
+      <pre data-lang="hook"><code><span class="k">Título:</span> <span class="s">"Atualizar docs ao salvar rota"</span>
+<span class="k">Evento:</span> File Save
+<span class="k">Padrão:</span> <span class="s">"src/routes/**/*.ts"</span>
+<span class="k">Ação:</span> Ask Kiro
+<span class="k">Prompt:</span>
+  <span class="s">"Analise a rota modificada e atualize o arquivo
+  docs/api.md com a nova especificação OpenAPI.
+  Preserve documentação de outras rotas."</span></code></pre>
+
+      <h3>Exemplo real: qualidade automatizada</h3>
+      <pre data-lang="hook"><code><span class="k">Título:</span> <span class="s">"Rodar testes após tarefa de spec"</span>
+<span class="k">Evento:</span> Post Task Execution
+<span class="k">Ação:</span> Run Command
+<span class="k">Comando:</span> <span class="s">"npm test -- --changed"</span></code></pre>
+
+      <h3>Boas práticas com Hooks</h3>
+      <ul>
+        <li><strong>Use padrões de arquivo específicos</strong> — <code>**/*.ts</code> é muito amplo. Prefira <code>src/api/**/*.ts</code>.</li>
+        <li><strong>Cuidado com loops infinitos</strong> — um hook que salva arquivo em File Save pode disparar a si mesmo.</li>
+        <li><strong>Prefira Run Command para tarefas determinísticas</strong> — mais rápido e previsível que usar o agente.</li>
+        <li><strong>Hooks que consomem créditos devem ser pensados</strong> — cada prompt disparado conta no seu plano.</li>
+        <li><strong>Compartilhe hooks via Git</strong> — eles ficam em <code>.kiro/hooks/</code> no projeto.</li>
+        <li><strong>Teste hooks manualmente antes</strong> — use Manual Trigger para validar antes de automatizar.</li>
+      </ul>
+
+      <div class="callout warn">
+        <span class="label">⚠ Atenção</span>
+        <p>Hooks em eventos frequentes (File Save em padrões amplos) podem consumir <strong>muitos créditos</strong> rapidamente e tornar o editor lento. Sempre comece restrito e expanda.</p>
+      </div>
+    </section>
+
+    <!-- 06 Steering -->
+    <section id="steering">
+      <h2><span class="num">06</span>Steering</h2>
+      <p class="tagline">Steering é a memória persistente do Kiro sobre o seu projeto. É onde você ensina "como as coisas funcionam por aqui".</p>
+
+      <h3>O conceito</h3>
+      <p>Steering files são arquivos Markdown que dão ao Kiro conhecimento contínuo sobre seu workspace. Em vez de repetir suas convenções em cada prompt ("use TypeScript estrito, prefira funções puras, nomes em camelCase..."), você escreve uma vez e o Kiro lembra para sempre.</p>
+
+      <h3>Dois escopos: workspace vs global</h3>
+      <div class="card-grid">
+        <div class="card">
+          <div class="icon">ESCOPO LOCAL</div>
+          <h4>Workspace</h4>
+          <p>Fica em <code>.kiro/steering/</code> na raiz do projeto. Aplica só àquele workspace. Ideal para convenções específicas do projeto.</p>
+        </div>
+        <div class="card">
+          <div class="icon">ESCOPO GLOBAL</div>
+          <h4>Global</h4>
+          <p>Fica em <code>~/.kiro/steering/</code> (home do usuário). Aplica a todos os workspaces. Ideal para preferências pessoais gerais.</p>
+        </div>
+      </div>
+
+      <p>Em caso de conflito, <strong>o workspace vence</strong> — você pode sobrescrever regras globais por projeto.</p>
+
+      <h3>Os 3 arquivos fundacionais</h3>
+      <p>Kiro oferece gerar automaticamente três arquivos base, recomendados para todo projeto:</p>
+
+      <div class="flow">
+        <div class="flow-step">
+          <div class="n">product.md</div>
+          <h5>Produto</h5>
+          <p>Propósito, usuários-alvo, features principais, objetivos de negócio</p>
+        </div>
+        <div class="flow-step">
+          <div class="n">tech.md</div>
+          <h5>Stack</h5>
+          <p>Frameworks, bibliotecas, ferramentas e restrições técnicas</p>
+        </div>
+        <div class="flow-step">
+          <div class="n">structure.md</div>
+          <h5>Estrutura</h5>
+          <p>Organização de arquivos, nomenclatura, padrões arquiteturais</p>
+        </div>
+      </div>
+
+      <h3>Os 4 modos de inclusão</h3>
+      <p>Nem todo contexto precisa estar sempre ativo. Kiro oferece 4 modos de inclusão configuráveis via front-matter YAML:</p>
+
+      <div class="accordion">
+        <div class="acc-item">
+          <button class="acc-head">1. Always (padrão) — Sempre incluído <span class="chev">+</span></button>
+          <div class="acc-body"><div class="acc-body-inner">
+            <pre data-lang="yaml"><code>---
+inclusion: always
+---</code></pre>
+            <p>Carregado em toda interação. Use para padrões universais do projeto: stack, segurança, convenções de código fundamentais.</p>
+          </div></div>
+        </div>
+        <div class="acc-item">
+          <button class="acc-head">2. FileMatch — Condicional por padrão <span class="chev">+</span></button>
+          <div class="acc-body"><div class="acc-body-inner">
+            <pre data-lang="yaml"><code>---
+inclusion: fileMatch
+fileMatchPattern: ["**/*.ts", "**/*.tsx"]
+---</code></pre>
+            <p>Só ativa quando o arquivo em contexto bate com o padrão. Use para guidance específico de camadas (API, componentes, testes).</p>
+          </div></div>
+        </div>
+        <div class="acc-item">
+          <button class="acc-head">3. Manual — Sob demanda <span class="chev">+</span></button>
+          <div class="acc-body"><div class="acc-body-inner">
+            <pre data-lang="yaml"><code>---
+inclusion: manual
+---</code></pre>
+            <p>Você invoca no chat com <code>#nome-do-arquivo</code> ou via <code>/</code>. Use para guias de troubleshooting, procedimentos de migração, referências pesadas.</p>
+          </div></div>
+        </div>
+        <div class="acc-item">
+          <button class="acc-head">4. Auto — IA decide quando incluir <span class="chev">+</span></button>
+          <div class="acc-body"><div class="acc-body-inner">
+            <pre data-lang="yaml"><code>---
+inclusion: auto
+name: api-design
+description: REST API design patterns. Use when creating or modifying API endpoints.
+---</code></pre>
+            <p>Kiro lê a descrição e decide sozinho quando é relevante. Use para conhecimento especializado que sobrecarregaria o contexto se sempre ligado.</p>
+          </div></div>
+        </div>
+      </div>
+
+      <h3>Exemplo prático de steering file</h3>
+      <pre data-lang="markdown"><code><span class="c">---
+inclusion: fileMatch
+fileMatchPattern: "src/api/**/*.ts"
+---</span>
+
+<span class="k"># Padrões de API REST</span>
+
+<span class="k">## Estrutura de resposta</span>
+Toda resposta da API deve seguir o formato:
+
+```json
+{
+  "data": {},
+  "meta": { "page": 1, "total": 100 },
+  "errors": []
+}
+```
+
+<span class="k">## Códigos HTTP</span>
+- 200: Sucesso com conteúdo
+- 201: Criação bem-sucedida
+- 400: Erro de validação (incluir detalhes em errors[])
+- 401: Não autenticado
+- 403: Autenticado mas sem permissão
+- 404: Recurso não encontrado
+
+<span class="k">## Autenticação</span>
+Todas as rotas exigem JWT no header `Authorization: Bearer &lt;token&gt;`,
+exceto `/auth/login` e `/auth/register`.</code></pre>
+
+      <h3>AGENTS.md — padrão aberto</h3>
+      <p>Kiro suporta o padrão aberto <strong>AGENTS.md</strong>. Se você já tem um arquivo <code>AGENTS.md</code> na raiz do projeto (usado por outras ferramentas agênticas), o Kiro o reconhece automaticamente e sempre inclui no contexto.</p>
+
+      <h3>Referências vivas a arquivos</h3>
+      <p>Use a sintaxe <code>#[[file:caminho/arquivo]]</code> dentro do steering para linkar arquivos reais do projeto. O conteúdo é carregado dinamicamente:</p>
+      <pre data-lang="markdown"><code>Siga o padrão desta configuração:
+#[[file:.env.example]]
+
+Use como referência para novos componentes:
+#[[file:src/components/ui/button.tsx]]</code></pre>
+
+      <h3>Boas práticas com Steering</h3>
+      <ul>
+        <li><strong>Um domínio por arquivo:</strong> <code>api-standards.md</code>, <code>testing-standards.md</code>, <code>security.md</code>.</li>
+        <li><strong>Nomes descritivos:</strong> <code>api-rest-conventions.md</code> > <code>api.md</code>.</li>
+        <li><strong>Explique o porquê, não só o quê</strong> — contexto ajuda o agente a tomar decisões análogas.</li>
+        <li><strong>Inclua exemplos de código</strong> — antes/depois, patterns e anti-patterns.</li>
+        <li><strong>Nunca coloque segredos</strong> — steering vai no Git junto com o código.</li>
+        <li><strong>Revise em mudanças arquiteturais</strong> — trate steering como código, exija PRs.</li>
+      </ul>
+    </section>
+
+    <!-- 07 MCP -->
+    <section id="mcp">
+      <h2><span class="num">07</span>MCP Servers</h2>
+      <p class="tagline">Model Context Protocol é o plugin system do mundo agêntico. É como dar superpoderes específicos para o Kiro.</p>
+
+      <h3>O que é MCP</h3>
+      <p>Model Context Protocol (MCP) é um protocolo aberto (criado pela Anthropic) que permite que agentes de IA se conectem a servidores externos especializados. Pense em MCP como <strong>extensões</strong>: cada servidor adiciona ferramentas, prompts e recursos específicos a um domínio.</p>
+
+      <p>Com MCP conectado, o Kiro pode:</p>
+      <ul>
+        <li><strong>Acessar documentação especializada</strong> — ex: servidor MCP da AWS dá acesso direto à documentação AWS</li>
+        <li><strong>Consultar bancos de dados</strong> — MCP para PostgreSQL, MongoDB, etc.</li>
+        <li><strong>Integrar com APIs externas</strong> — GitHub, Jira, Linear, Slack</li>
+        <li><strong>Usar templates de prompt e recursos</strong> via menção <code>#</code> no chat</li>
+        <li><strong>Executar ferramentas customizadas</strong> específicas do seu workflow</li>
+      </ul>
+
+      <h3>Exemplos de MCP Servers populares</h3>
+      <div class="card-grid">
+        <div class="card">
+          <div class="icon">AWS</div>
+          <h4>AWS Docs MCP</h4>
+          <p>Busca, leitura e recomendações direto da documentação AWS dentro do Kiro.</p>
+        </div>
+        <div class="card">
+          <div class="icon">DB</div>
+          <h4>Database MCP</h4>
+          <p>Conecta a Postgres/MySQL/Mongo, executa queries e retorna schemas.</p>
+        </div>
+        <div class="card">
+          <div class="icon">GIT</div>
+          <h4>GitHub MCP</h4>
+          <p>Cria PRs, lê issues, gerencia repositórios sem sair do editor.</p>
+        </div>
+        <div class="card">
+          <div class="icon">API</div>
+          <h4>Fetch MCP</h4>
+          <p>Faz requisições HTTP para APIs externas e retorna dados estruturados.</p>
+        </div>
+      </div>
+
+      <h3>Como configurar</h3>
+      <ol>
+        <li>Abra as Settings com <code>Cmd+,</code> (ou <code>Ctrl+,</code>) e habilite MCP</li>
+        <li>Crie um arquivo de configuração MCP (JSON) listando os servidores</li>
+        <li>Vá à aba "MCP Servers" no painel Kiro para ver o status</li>
+        <li>Clique em qualquer ferramenta listada para inserir um prompt template no chat</li>
+      </ol>
+
+      <h3>Exemplo de configuração MCP</h3>
+      <pre data-lang="json"><code>{
+  "mcpServers": {
+    "aws-docs": {
+      "command": "uvx",
+      "args": ["awslabs.aws-documentation-mcp-server@latest"]
+    },
+    "postgres": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-postgres"],
+      "env": {
+        "POSTGRES_URL": "postgresql://user:pass@localhost/db"
+      }
+    }
+  }
+}</code></pre>
+
+      <div class="callout warn">
+        <span class="label">⚠ Segurança</span>
+        <p>Servidores MCP podem acessar dados sensíveis. Trate-os como você trataria dependências: <strong>verifique a origem, revise o código antes de instalar</strong>, nunca use MCPs de fontes não confiáveis. Segredos e tokens devem usar variáveis de ambiente, nunca ficar hardcoded no arquivo de config.</p>
+      </div>
+
+      <h3>Boas práticas com MCP</h3>
+      <ul>
+        <li><strong>Comece com poucos servidores</strong> — cada MCP adiciona ferramentas que podem confundir o agente se forem muitas.</li>
+        <li><strong>Verifique os logs em caso de erro</strong> — painel Output → "Kiro — MCP Logs".</li>
+        <li><strong>Use MCPs oficiais quando disponíveis</strong> — AWS, GitHub, etc. mantêm servidores oficiais.</li>
+        <li><strong>Documente no steering</strong> quais MCPs estão ativos e quando usá-los.</li>
+      </ul>
+    </section>
+
+    <!-- 08 Modelos -->
+    <section id="modelos">
+      <h2><span class="num">08</span>Modelos de IA</h2>
+      <p>Kiro não está preso a um modelo só — você pode escolher qual modelo processa seus prompts. Cada modelo tem custo diferente em créditos.</p>
+
+      <h3>Modelos disponíveis</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Modelo</th><th>Característica</th><th>Custo em créditos</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Auto</strong> (padrão)</td><td>Mix inteligente de modelos — balanceia qualidade, latência e custo</td><td>Base (1x)</td></tr>
+            <tr><td><strong>Claude Sonnet 4.5</strong></td><td>Raciocínio avançado e código confiável</td><td>~1.3x</td></tr>
+            <tr><td><strong>Claude Sonnet 4</strong></td><td>Versão anterior, ainda poderosa</td><td>~1.3x</td></tr>
+            <tr><td><strong>Claude Haiku 4.5</strong></td><td>Mais rápido e barato, para tarefas simples</td><td>menor</td></tr>
+            <tr><td><strong>Claude Opus 4.5/4.6/4.7</strong></td><td>Mais inteligente, melhor para problemas complexos</td><td>maior</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p><strong>Recomendação:</strong> deixe no <strong>Auto</strong> por padrão. Kiro usa intent detection e caching para escolher o modelo mais eficiente para cada tarefa. Só force um modelo específico se tiver um motivo claro (ex: tarefas muito complexas em Opus, tarefas triviais em Haiku).</p>
+    </section>
+
+    <!-- 09 Exemplos -->
+    <section id="exemplos">
+      <h2><span class="num">09</span>Exemplos Práticos</h2>
+      <p>Três exemplos de complexidade crescente para você sentir como o Kiro funciona na prática.</p>
+
+      <h3>Exemplo 1 — Básico: Script de limpeza (Vibe Mode)</h3>
+      <p><strong>Cenário:</strong> você precisa de um script Python que remove arquivos temporários antigos de uma pasta.</p>
+      <pre data-lang="prompt"><code><span class="c"># No chat, em Vibe Mode:</span>
+"Crie um script Python que remove arquivos .tmp e .log
+com mais de 7 dias da pasta /tmp/app. Use pathlib e
+mostre o que foi deletado. Inclua modo --dry-run."</code></pre>
+
+      <p>Kiro gera o script pronto, com argparse, logging e o <code>--dry-run</code>. Você revisa, aceita e usa. <strong>Tempo total: ~30 segundos.</strong></p>
+
+      <h3>Exemplo 2 — Intermediário: Endpoint com validação (Spec Mode)</h3>
+      <p><strong>Cenário:</strong> adicionar um endpoint de cadastro de usuário com validação completa numa API Express.</p>
+
+      <pre data-lang="prompt"><code><span class="c"># Em Spec Mode, workflow Requirements-First:</span>
+"Implemente endpoint POST /users para cadastro com:
+email único, senha com mínimo 8 caracteres e 1 número,
+nome obrigatório (2-50 chars), idade opcional (18+).
+Retornar erros de validação detalhados.
+Usar PostgreSQL e bcrypt para senha."</code></pre>
+
+      <p>Kiro gera três arquivos. Veja o que sai em cada um (simplificado):</p>
+
+      <div class="tabs">
+        <div class="tab-buttons">
+          <button class="tab-btn active" data-tab="req">requirements.md</button>
+          <button class="tab-btn" data-tab="des">design.md</button>
+          <button class="tab-btn" data-tab="tas">tasks.md</button>
+        </div>
+        <div class="tab-panel active" data-panel="req">
+<pre data-lang="markdown"><code><span class="k"># Cadastro de Usuário</span>
+
+<span class="k">## User Story</span>
+Como visitante, quero me cadastrar com email e senha
+para acessar funcionalidades autenticadas.
+
+<span class="k">## Critérios de Aceitação (EARS)</span>
+
+WHEN o visitante envia POST /users com dados válidos
+THE SYSTEM SHALL criar o usuário e retornar 201 com ID
+
+WHEN o email já está cadastrado
+THE SYSTEM SHALL retornar 409 Conflict com mensagem clara
+
+WHEN a senha tem menos de 8 caracteres
+THE SYSTEM SHALL retornar 400 com erro específico no campo
+
+WHEN não há nome no payload
+THE SYSTEM SHALL retornar 400 com "name is required"</code></pre>
+        </div>
+        <div class="tab-panel" data-panel="des">
+<pre data-lang="markdown"><code><span class="k"># Design Técnico</span>
+
+<span class="k">## Arquitetura</span>
+Cliente → Express Route → Validator (zod) →
+Controller → UserService → UserRepository → PostgreSQL
+
+<span class="k">## Fluxo de criação</span>
+1. Router recebe POST /users
+2. Middleware valida schema com Zod
+3. Controller chama userService.create()
+4. Service verifica email duplicado
+5. Service hasheia senha com bcrypt (10 rounds)
+6. Repository insere e retorna usuário sem senha
+
+<span class="k">## Tratamento de erros</span>
+- Validação: 400 com array de errors por campo
+- Duplicado: 409 com code USER_EMAIL_EXISTS
+- Interno: 500 com logging (sem expor detalhes)</code></pre>
+        </div>
+        <div class="tab-panel" data-panel="tas">
+<pre data-lang="markdown"><code><span class="k"># Tarefas de Implementação</span>
+
+- [ ] 1. Criar schema Zod em src/schemas/user.ts
+- [ ] 2. Criar UserRepository em src/repositories/user.ts
+- [ ] 3. Criar UserService em src/services/user.ts
+- [ ] 4. Criar UserController em src/controllers/user.ts
+- [ ] 5. Registrar rota POST /users no router
+- [ ] 6. Adicionar middleware de validação
+- [ ] 7. Escrever testes unitários do service
+- [ ] 8. Escrever testes de integração do endpoint
+- [ ] 9. Atualizar documentação OpenAPI</code></pre>
+        </div>
+      </div>
+
+      <p>Você clica em "Start" na tarefa 1, Kiro implementa, você revisa e aceita. Repete para cada tarefa. Ao final, todo o código está rastreado contra requirements específicos.</p>
+
+      <h3>Exemplo 3 — Avançado: Combinando Specs + Hooks + Steering</h3>
+      <p><strong>Cenário:</strong> startup construindo um SaaS multi-tenant. Quer garantir qualidade, documentação sempre atualizada e padrões consistentes.</p>
+
+      <h4>Setup inicial (uma vez só)</h4>
+      <ol>
+        <li><strong>Steering files:</strong>
+          <ul>
+            <li><code>product.md</code>: descreve o SaaS, personas, modelo de negócio</li>
+            <li><code>tech.md</code>: Node.js, Fastify, Prisma, PostgreSQL, Redis, TypeScript estrito</li>
+            <li><code>structure.md</code>: modular monolith, DDD, camadas bem definidas</li>
+            <li><code>multi-tenancy.md</code> (fileMatch em src/**/*.ts): regras de isolamento por tenant</li>
+            <li><code>testing.md</code> (fileMatch em **/*.test.ts): padrões de teste com Vitest</li>
+          </ul>
+        </li>
+        <li><strong>Agent Hooks:</strong>
+          <ul>
+            <li>File Save em <code>src/**/*.ts</code> → Run Command: <code>npm run lint:fix</code></li>
+            <li>Post Task Execution → Ask Kiro: "Rode testes relacionados e reporte falhas"</li>
+            <li>File Create em <code>src/features/**/*.ts</code> → Ask Kiro: "Crie arquivo de teste correspondente"</li>
+          </ul>
+        </li>
+        <li><strong>MCP Servers:</strong>
+          <ul>
+            <li>Postgres MCP — para queries diretas ao schema</li>
+            <li>GitHub MCP — para criar PRs direto do chat</li>
+          </ul>
+        </li>
+      </ol>
+
+      <h4>Desenvolvimento diário</h4>
+      <p>Para cada feature nova, o dev cria uma Feature Spec. Kiro já conhece o produto, stack, estrutura e regras de multi-tenancy por causa do steering. As tasks saem alinhadas ao padrão da casa. Hooks garantem lint, testes e documentação sempre em dia. <strong>Resultado: consistência automática em toda a equipe.</strong></p>
+
+      <div class="callout">
+        <span class="label">Observação</span>
+        <p>Este setup foi validado por times reais em produção, incluindo startups que relatam <strong>semana para dia em time-to-value</strong> com spec-driven development bem configurado.</p>
+      </div>
+    </section>
+
+    <!-- 10 Boas Práticas -->
+    <section id="boas-praticas">
+      <h2><span class="num">10</span>Boas Práticas</h2>
+
+      <h3>Para todos os projetos</h3>
+      <ul>
+        <li><strong>Sempre crie os 3 steering fundacionais</strong> no início de um projeto — é o melhor investimento de 10 minutos que você fará.</li>
+        <li><strong>Commite a pasta <code>.kiro/</code></strong> — specs, steering e hooks são parte do projeto.</li>
+        <li><strong>Itere em specs antes de codar</strong> — 15 minutos ajustando requirements economizam 3 horas de código errado.</li>
+        <li><strong>Use Bugfix Specs para qualquer correção em produção</strong> — a seção "comportamento que não deve mudar" é o que previne regressões.</li>
+        <li><strong>Revise o que o agente faz</strong> — Kiro é bom, não é infalível. Sempre revise diffs antes de aceitar.</li>
+      </ul>
+
+      <h3>Para times</h3>
+      <ul>
+        <li><strong>Padronize steering files entre devs</strong> — use o mesmo <code>.kiro/steering/</code> para todos.</li>
+        <li><strong>Defina donos de steering files</strong> — como se fossem módulos de código.</li>
+        <li><strong>Revise specs em PRs</strong> — specs mudam? Isso é mudança de comportamento, merece review.</li>
+        <li><strong>Use hooks para enforcement automático</strong> — mais barato que code review manual.</li>
+        <li><strong>Considere o plano Enterprise</strong> em times com 10+ devs pela gestão centralizada.</li>
+      </ul>
+
+      <h3>Para gestão de créditos</h3>
+      <ul>
+        <li><strong>Mantenha o modelo em Auto</strong> — o roteamento inteligente economiza muito.</li>
+        <li><strong>Use Vibe Mode para tarefas simples</strong> — spec consome mais créditos que vale a pena só em tarefas complexas.</li>
+        <li><strong>Evite hooks em File Save com padrões amplos</strong> — podem disparar centenas de vezes por dia.</li>
+        <li><strong>Monitore o dashboard</strong> — créditos são atualizados a cada 5 minutos.</li>
+      </ul>
+    </section>
+
+    <!-- 11 Armadilhas -->
+    <section id="armadilhas">
+      <h2><span class="num">11</span>O que Evitar</h2>
+
+      <h3>Armadilhas comuns</h3>
+      <div class="accordion">
+        <div class="acc-item">
+          <button class="acc-head">1. Usar Spec Mode para tudo <span class="chev">+</span></button>
+          <div class="acc-body"><div class="acc-body-inner">
+            <p>Spec gera 3 arquivos, design documentado, lista de tarefas. Isso é ótimo para features de verdade — mas é overkill para um script de 20 linhas. <strong>Use Vibe Mode para tarefas simples.</strong> Não tenha medo de "ser rápido" — nem tudo precisa virar processo formal.</p>
+          </div></div>
+        </div>
+        <div class="acc-item">
+          <button class="acc-head">2. Steering gigantes e desorganizados <span class="chev">+</span></button>
+          <div class="acc-body"><div class="acc-body-inner">
+            <p>Um único <code>steering.md</code> com 2000 linhas é pior que não ter steering. O agente perde foco e o contexto fica barulhento. <strong>Mantenha um arquivo por domínio</strong>, use <code>fileMatch</code> para reduzir ruído.</p>
+          </div></div>
+        </div>
+        <div class="acc-item">
+          <button class="acc-head">3. Confiar 100% sem revisar <span class="chev">+</span></button>
+          <div class="acc-body"><div class="acc-body-inner">
+            <p>Por mais estruturado que seja o spec-driven, o código ainda é gerado por IA. Bugs sutis, dependências erradas, vulnerabilidades de segurança acontecem. <strong>Revise sempre os diffs</strong>, especialmente em código que vai para produção ou lida com segurança.</p>
+          </div></div>
+        </div>
+        <div class="acc-item">
+          <button class="acc-head">4. Hooks que causam loops <span class="chev">+</span></button>
+          <div class="acc-body"><div class="acc-body-inner">
+            <p>Um hook em File Save que modifica o mesmo arquivo salvo dispara a si mesmo infinitamente. <strong>Sempre pense no ciclo</strong>: o que minha ação modifica? Pode disparar outro hook? Teste com Manual Trigger antes de ativar.</p>
+          </div></div>
+        </div>
+        <div class="acc-item">
+          <button class="acc-head">5. Segredos em steering ou MCP config <span class="chev">+</span></button>
+          <div class="acc-body"><div class="acc-body-inner">
+            <p>Steering files vão no Git. Config do MCP pode ir no Git. <strong>Nunca coloque API keys, senhas ou tokens em texto plano.</strong> Use variáveis de ambiente, <code>.env</code> (gitignored) ou secret managers.</p>
+          </div></div>
+        </div>
+        <div class="acc-item">
+          <button class="acc-head">6. Ignorar o dashboard de créditos <span class="chev">+</span></button>
+          <div class="acc-body"><div class="acc-body-inner">
+            <p>Tarefas de spec consomem mais que prompts simples. Hooks disparam frequentemente. Opus consome mais que Haiku. É fácil queimar um mês inteiro em uma semana. <strong>Acompanhe o dashboard semanalmente</strong>, especialmente no início.</p>
+          </div></div>
+        </div>
+        <div class="acc-item">
+          <button class="acc-head">7. Não usar Bugfix Specs para bugs <span class="chev">+</span></button>
+          <div class="acc-body"><div class="acc-body-inner">
+            <p>Vibe coding um bug fix frequentemente introduz regressão. <strong>A documentação "comportamento que NÃO deve mudar"</strong> da Bugfix Spec é o ativo mais valioso para correções em código legado.</p>
+          </div></div>
+        </div>
+        <div class="acc-item">
+          <button class="acc-head">8. MCPs de fontes não confiáveis <span class="chev">+</span></button>
+          <div class="acc-body"><div class="acc-body-inner">
+            <p>MCP servers têm acesso a muito — seu sistema de arquivos, sua rede, seus dados. <strong>Só instale MCPs de fontes conhecidas</strong> (oficiais ou auditáveis). Revise o código-fonte antes em casos sensíveis.</p>
+          </div></div>
+        </div>
+      </div>
+
+      <h3>Sinais de que algo está errado</h3>
+      <ul>
+        <li>🚩 Kiro gera código que ignora suas convenções → seu steering está incompleto ou mal escrito</li>
+        <li>🚩 Specs ficam grandes demais → você está tentando fazer muita coisa em uma feature só</li>
+        <li>🚩 Créditos sumindo rápido → revise hooks e modelos em uso</li>
+        <li>🚩 Agente executa comandos inesperados → revise regras de Pre Tool Use</li>
+        <li>🚩 Código repetitivo apesar do steering → reforce exemplos no steering, use <code>inclusion: always</code> em fundamentais</li>
+      </ul>
+    </section>
+
+    <!-- 12 Planos -->
+    <section id="planos">
+      <h2><span class="num">12</span>Planos & Preços</h2>
+      <p>Kiro trabalha com modelo de créditos — cada prompt consome uma fração de crédito, dependendo da complexidade e do modelo.</p>
+
+      <div class="price-grid">
+        <div class="price-card">
+          <div class="tier">Free</div>
+          <div class="price">$0<span>/mês</span></div>
+          <div class="credits">50 créditos/mês</div>
+          <p class="desc">Perpétuo. Ideal para experimentar e projetos ocasionais.</p>
+        </div>
+        <div class="price-card featured">
+          <div class="tier">Pro</div>
+          <div class="price">$20<span>/mês</span></div>
+          <div class="credits">1.000 créditos</div>
+          <p class="desc">Overage a $0,04/crédito. Plano mais equilibrado para devs individuais.</p>
+        </div>
+        <div class="price-card">
+          <div class="tier">Pro+</div>
+          <div class="price">$40<span>/mês</span></div>
+          <div class="credits">2.000 créditos</div>
+          <p class="desc">Para quem usa Kiro diariamente em vários projetos.</p>
+        </div>
+        <div class="price-card">
+          <div class="tier">Power</div>
+          <div class="price">$200<span>/mês</span></div>
+          <div class="credits">10.000 créditos</div>
+          <p class="desc">Uso intensivo, múltiplos projetos pesados, times pequenos.</p>
+        </div>
+      </div>
+
+      <h3>O que é um crédito?</h3>
+      <p>Um crédito é uma unidade de trabalho em resposta a um prompt. É medido com duas casas decimais (mínimo 0,01).</p>
+      <ul>
+        <li><strong>Prompts simples:</strong> menos de 1 crédito cada</li>
+        <li><strong>Execução de spec task:</strong> tipicamente mais de 1 crédito</li>
+        <li><strong>Modelo Auto:</strong> custo base (1x)</li>
+        <li><strong>Claude Sonnet 4:</strong> ~1,3x mais caro que Auto</li>
+        <li><strong>Opus:</strong> ainda mais caro</li>
+      </ul>
+
+      <h3>Tudo consome créditos</h3>
+      <p>Qualquer operação agêntica conta: vibe mode, spec mode, refinamento de specs, execução de tarefas, <strong>e hooks quando disparam</strong>. Por isso hooks em eventos frequentes podem ser caros.</p>
+
+      <h3>Bônus e overage</h3>
+      <div class="callout">
+        <span class="label">Trial</span>
+        <p>Primeiro login = <strong>500 créditos bônus</strong>, válidos por 30 dias. Aplica mesmo no plano Free.</p>
+      </div>
+      <p><strong>Overage:</strong> em planos pagos, você pode ativar cobrança adicional a $0,04/crédito quando estourar. Vem desativado por padrão — ative em Settings se quiser continuidade sem limite.</p>
+
+      <h3>Enterprise</h3>
+      <p>Para times, o plano Enterprise oferece:</p>
+      <ul>
+        <li>Billing centralizado</li>
+        <li>SSO via SAML/SCIM (AWS IAM Identity Center)</li>
+        <li>Dashboard de gestão organizacional</li>
+        <li>Analytics de uso</li>
+        <li>Controles de segurança e privacidade enterprise-grade</li>
+        <li>Atribuição de planos por usuário</li>
+      </ul>
+
+      <div class="callout warn">
+        <span class="label">Atenção aos detalhes</span>
+        <p><strong>Créditos não acumulam</strong> — reiniciam todo mês.<br>
+        <strong>GovCloud (US)</strong> custa ~20% a mais e não tem plano Free.<br>
+        <strong>Subscriptions são individuais</strong> — não compartilhe sua conta com o time.</p>
+      </div>
+    </section>
+
+    <!-- 13 Comparativo -->
+    <section id="comparativo">
+      <h2><span class="num">13</span>Kiro vs Cursor vs GitHub Copilot</h2>
+      <p>Ambas são ferramentas sérias. A escolha depende do seu workflow.</p>
+
+      <div class="table-wrap">
+        <table class="compare-table">
+          <thead>
+            <tr><th>Característica</th><th>Kiro</th><th>Cursor</th><th>GitHub Copilot</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Base</td>
+              <td>Code OSS (fork)</td>
+              <td>VS Code (fork)</td>
+              <td>Plugin em VS Code/JetBrains</td>
+            </tr>
+            <tr>
+              <td>Spec-driven</td>
+              <td class="yes">✓ Nativo e completo</td>
+              <td class="no">—</td>
+              <td class="no">—</td>
+            </tr>
+            <tr>
+              <td>Agent Hooks (eventos)</td>
+              <td class="yes">✓ 10 tipos nativos</td>
+              <td class="partial">Via workflows</td>
+              <td class="no">—</td>
+            </tr>
+            <tr>
+              <td>Steering persistente</td>
+              <td class="yes">✓ 4 modos</td>
+              <td class="partial">.cursorrules</td>
+              <td class="partial">Via custom instructions</td>
+            </tr>
+            <tr>
+              <td>MCP Support</td>
+              <td class="yes">✓ Nativo</td>
+              <td class="yes">✓ Nativo</td>
+              <td class="partial">Em evolução</td>
+            </tr>
+            <tr>
+              <td>CLI headless</td>
+              <td class="yes">✓ Kiro CLI</td>
+              <td class="partial">Limited</td>
+              <td class="partial">Via GH CLI</td>
+            </tr>
+            <tr>
+              <td>Autocomplete inline</td>
+              <td class="yes">✓</td>
+              <td class="yes">✓ (muito bom)</td>
+              <td class="yes">✓ (padrão da indústria)</td>
+            </tr>
+            <tr>
+              <td>Modelo padrão</td>
+              <td>Claude Sonnet 4.5 / Auto</td>
+              <td>Multi (GPT, Claude, etc.)</td>
+              <td>GPT (OpenAI)</td>
+            </tr>
+            <tr>
+              <td>Preço entrada (pago)</td>
+              <td>$20/mês</td>
+              <td>$20/mês</td>
+              <td>$10/mês</td>
+            </tr>
+            <tr>
+              <td>Free tier</td>
+              <td class="yes">✓ 50 créditos</td>
+              <td class="yes">✓ Limited Hobby</td>
+              <td class="partial">Limited, sem novo usuário</td>
+            </tr>
+            <tr>
+              <td>Multimodal (imagens)</td>
+              <td class="yes">✓</td>
+              <td class="yes">✓</td>
+              <td class="partial">Recente</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Quando escolher cada um</h3>
+
+      <div class="card-grid">
+        <div class="card">
+          <div class="icon">KIRO</div>
+          <h4>Escolha Kiro se...</h4>
+          <p>Você constrói features complexas, trabalha em time, precisa de documentação/auditoria, valoriza estrutura, ou quer automações baseadas em eventos. Especialmente forte em stacks AWS.</p>
+        </div>
+        <div class="card">
+          <div class="icon">CURSOR</div>
+          <h4>Escolha Cursor se...</h4>
+          <p>Você quer a melhor experiência de autocomplete inline, está em dev solo focado em velocidade, tem workflow menos estruturado, ou já tem processos próprios de documentação.</p>
+        </div>
+        <div class="card">
+          <div class="icon">COPILOT</div>
+          <h4>Escolha Copilot se...</h4>
+          <p>Você está no ecossistema GitHub/Microsoft, quer um plugin leve no VS Code/JetBrains que você já usa, ou tem restrições corporativas que favorecem o Copilot Enterprise.</p>
+        </div>
+      </div>
+
+      <p>Vale lembrar: não é exclusivo. Muitos devs usam <strong>Copilot para autocomplete + Kiro para features estruturadas</strong>. Eles coexistem bem.</p>
+    </section>
+
+    <!-- 14 Limites -->
+    <section id="limites">
+      <h2><span class="num">14</span>Limites & Considerações</h2>
+
+      <h3>Limites técnicos</h3>
+      <ul>
+        <li><strong>Suporte a linguagens:</strong> Kiro suporta Python, Java, JavaScript, TypeScript, C#, Go, Rust, PHP, Ruby, Kotlin, C, C++, shell, SQL, Scala, JSON, YAML e HCL (entre outras). Linguagens menos comuns podem ter qualidade reduzida.</li>
+        <li><strong>Context window:</strong> mesmo com Claude Sonnet 4.5, há limite de contexto. Projetos muito grandes podem exigir estratégia — use steering com <code>fileMatch</code> para reduzir ruído.</li>
+        <li><strong>Qualidade = qualidade do input:</strong> prompts vagos = resultados vagos. Specs mal formuladas = código mal estruturado.</li>
+        <li><strong>Créditos não rolam:</strong> não usou o mês? Perdeu.</li>
+      </ul>
+
+      <h3>Limitações de produto</h3>
+      <ul>
+        <li><strong>Extensões:</strong> usa Open VSX (não o marketplace oficial da Microsoft). A maioria das extensões populares existe, mas algumas podem faltar.</li>
+        <li><strong>Compartilhamento de conta:</strong> não permitido. Cada dev precisa da sua.</li>
+        <li><strong>GovCloud:</strong> não tem Free tier e custa 20% a mais.</li>
+        <li><strong>Regionalidade:</strong> modelos disponíveis variam por país (restrições dos provedores de LLM).</li>
+      </ul>
+
+      <h3>Limitações conceituais</h3>
+      <ul>
+        <li><strong>Spec-driven tem custo cognitivo:</strong> pensar em requirements antes de codar é diferente. Alguns devs preferem a liberdade do vibe coding.</li>
+        <li><strong>Não substitui conhecimento:</strong> você ainda precisa entender o que Kiro gera para revisar bem.</li>
+        <li><strong>Curva de aprendizado real:</strong> usar Kiro bem (steering + hooks + specs em harmonia) leva semanas de prática.</li>
+        <li><strong>Preview status:</strong> algumas features ainda são preview. Mudanças podem acontecer.</li>
+      </ul>
+
+      <div class="callout">
+        <span class="label">Privacidade</span>
+        <p>Kiro tem controles enterprise-grade de segurança e privacidade. Detalhes completos em <code>kiro.dev/docs/privacy-and-security</code>. Verifique com o time de segurança antes de usar em código proprietário sensível.</p>
+      </div>
+    </section>
+
+    <!-- 15 Glossário -->
+    <section id="glossario">
+      <h2><span class="num">15</span>Glossário</h2>
+      <dl class="glossary">
+        <dt>Agent Hook</dt>
+        <dd>Automação disparada por evento (salvar arquivo, criar, prompt submetido, etc.) que executa prompt ou comando shell.</dd>
+
+        <dt>Agentic IDE</dt>
+        <dd>IDE onde a IA não apenas autocompleta, mas age com autonomia — executa tarefas, usa ferramentas, toma decisões.</dd>
+
+        <dt>AGENTS.md</dt>
+        <dd>Padrão aberto para arquivo de instruções a agentes de IA, reconhecido por várias ferramentas incluindo Kiro.</dd>
+
+        <dt>Autopilot</dt>
+        <dd>Modo onde Kiro executa tarefas grandes autonomamente, sem precisar de instrução passo-a-passo.</dd>
+
+        <dt>Code OSS</dt>
+        <dd>Versão open-source do Visual Studio Code, sem telemetria e branding da Microsoft. Base do Kiro.</dd>
+
+        <dt>Crédito</dt>
+        <dd>Unidade de consumo no Kiro. Cada prompt consome uma fração, variando com complexidade e modelo.</dd>
+
+        <dt>EARS</dt>
+        <dd>Easy Approach to Requirements Syntax. Notação estruturada (WHEN/SHALL) usada pelo Kiro para requirements.</dd>
+
+        <dt>Inclusion Mode</dt>
+        <dd>Configuração de quando um steering file é carregado: always, fileMatch, manual ou auto.</dd>
+
+        <dt>MCP</dt>
+        <dd>Model Context Protocol — protocolo aberto para conectar agentes de IA a servidores externos com ferramentas e dados.</dd>
+
+        <dt>Spec</dt>
+        <dd>Especificação estruturada no Kiro, composta por requirements.md, design.md e tasks.md.</dd>
+
+        <dt>Spec-driven development</dt>
+        <dd>Metodologia onde a especificação é a fonte da verdade e o código é derivado dela.</dd>
+
+        <dt>Steering</dt>
+        <dd>Sistema de arquivos markdown que dão ao Kiro conhecimento persistente sobre projeto, convenções e padrões.</dd>
+
+        <dt>Vibe coding</dt>
+        <dd>Estilo de desenvolvimento onde você conversa livremente com a IA para gerar código sem estrutura formal.</dd>
+      </dl>
+    </section>
+
+    <!-- 16 Trilha -->
+    <section id="trilha">
+      <h2><span class="num">16</span>Trilha de Aprendizado</h2>
+      <p>Sugestão de ordem para dominar o Kiro em 3 semanas.</p>
+
+      <h3>Semana 1 — Fundação</h3>
+      <ul>
+        <li><strong>Dia 1-2:</strong> Instale, explore a interface, faça o tutorial "Your first project" oficial.</li>
+        <li><strong>Dia 3-4:</strong> Use apenas Vibe Mode. Tente tarefas que você faria normalmente. Sinta como responde.</li>
+        <li><strong>Dia 5-7:</strong> Crie seu primeiro Spec (algo simples — um endpoint, um componente). Vá do requirements ao código. Observe os 3 arquivos gerados.</li>
+      </ul>
+
+      <h3>Semana 2 — Personalização</h3>
+      <ul>
+        <li><strong>Dia 8-9:</strong> Gere os 3 steering fundacionais para um projeto real seu. Itere até ficarem bons.</li>
+        <li><strong>Dia 10-11:</strong> Crie 2-3 steering files específicos (api-standards, testing, etc.) com <code>fileMatch</code>.</li>
+        <li><strong>Dia 12-14:</strong> Experimente Agent Hooks. Comece com 1 hook simples (ex: formatar ao salvar). Depois adicione 2-3 mais úteis.</li>
+      </ul>
+
+      <h3>Semana 3 — Escala</h3>
+      <ul>
+        <li><strong>Dia 15-16:</strong> Conecte um MCP server (sugestão: AWS Docs ou GitHub). Use-o em um fluxo real.</li>
+        <li><strong>Dia 17-18:</strong> Use Bugfix Spec em um bug real. Observe a documentação "não deve mudar".</li>
+        <li><strong>Dia 19-21:</strong> Combine tudo: projeto novo com steering completo + hooks + specs + MCP. Compare a produtividade com uma semana sem Kiro.</li>
+      </ul>
+
+      <h3>Além da trilha</h3>
+      <ul>
+        <li>Siga o blog oficial em <code>kiro.dev/blog</code> para ver patterns e casos reais</li>
+        <li>Leia o FAQ completo em <code>kiro.dev/faq</code></li>
+        <li>Explore exemplos abertos no GitHub (procure "Kiro spec examples")</li>
+        <li>Experimente o Kiro CLI em workflows CI/CD</li>
+      </ul>
+    </section>
+
+    <!-- 17 Recursos -->
+    <section id="recursos">
+      <h2><span class="num">17</span>Recursos Oficiais</h2>
+      <ul>
+        <li><strong>Site oficial:</strong> <code>kiro.dev</code></li>
+        <li><strong>Documentação completa:</strong> <code>kiro.dev/docs</code></li>
+        <li><strong>Blog:</strong> <code>kiro.dev/blog</code></li>
+        <li><strong>Downloads:</strong> <code>kiro.dev/downloads</code></li>
+        <li><strong>Preços:</strong> <code>kiro.dev/pricing</code></li>
+        <li><strong>FAQ:</strong> <code>kiro.dev/faq</code></li>
+        <li><strong>Changelog:</strong> <code>kiro.dev/changelog</code></li>
+        <li><strong>Enterprise:</strong> <code>kiro.dev/enterprise</code></li>
+        <li><strong>GitHub (issues):</strong> <code>github.com/kirodotdev/Kiro</code></li>
+        <li><strong>MCP oficial:</strong> <code>modelcontextprotocol.io</code></li>
+        <li><strong>AGENTS.md padrão:</strong> <code>agents.md</code></li>
+      </ul>
+
+      <h3>Seções-chave da documentação</h3>
+      <ul>
+        <li><code>/docs/specs/</code> — Especificações</li>
+        <li><code>/docs/hooks/</code> — Agent Hooks</li>
+        <li><code>/docs/steering/</code> — Steering files</li>
+        <li><code>/docs/mcp/</code> — MCP Servers</li>
+        <li><code>/docs/models/</code> — Modelos de IA</li>
+        <li><code>/docs/cli/</code> — Kiro CLI</li>
+      </ul>
+    </section>
+
+    <footer>
+      <p><strong>Guia de Estudos do Kiro</strong> — versão 1.0</p>
+      <p>Baseado na documentação oficial em kiro.dev · Abril 2026</p>
+      <p style="margin-top:16px;color:var(--accent);font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.15em">FIM DO GUIA · BOA JORNADA 🚀</p>
+    </footer>
+  </main>
+</div>
+
+<script>
+// Accordion
+document.querySelectorAll('.acc-head').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    btn.parentElement.classList.toggle('open');
+  });
+});
+
+// Tabs (delegated scope)
+document.querySelectorAll('.tabs').forEach(tabs=>{
+  const btns = tabs.querySelectorAll('.tab-btn');
+  const panels = tabs.querySelectorAll('.tab-panel');
+  btns.forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const key = btn.dataset.tab;
+      btns.forEach(b=>b.classList.toggle('active', b===btn));
+      panels.forEach(p=>p.classList.toggle('active', p.dataset.panel===key));
+    });
+  });
+});
+
+// Nav active section
+const navLinks = document.querySelectorAll('.nav a');
+const sections = document.querySelectorAll('section[id]');
+const observer = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      const id = e.target.id;
+      navLinks.forEach(a=>{
+        a.classList.toggle('active', a.getAttribute('href')==='#'+id);
+      });
+    }
+  });
+},{rootMargin:'-30% 0% -60% 0%'});
+sections.forEach(s=>observer.observe(s));
+</script>
+
+</body>
+</html>
